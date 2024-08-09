@@ -7,15 +7,19 @@ const account_batch = @import("account_batch.zig");
 const client = @import("client.zig");
 const id_batch = @import("id_batch.zig");
 const transfer_batch = @import("transfer_batch.zig");
+const query_batch = @import("query_batch.zig");
+
 const AccountBatch = account_batch.AccountBatch;
 const IdBatch = id_batch.IdBatch;
 const TransferBatch = transfer_batch.TransferBatch;
+const QueryFilterBatch = query_batch.QueryFilterBatch;
 const Client = client.Client;
 
 const ClientResource = client.ClientResource;
 const AccountBatchResource = account_batch.AccountBatchResource;
 const IdBatchResource = id_batch.IdBatchResource;
 const TransferBatchResource = transfer_batch.TransferBatchResource;
+const QueryFilterBatchResource = query_batch.QueryFilterBatchResource;
 
 pub const vsr_options = .{
     .config_base = .default,
@@ -52,6 +56,12 @@ var exported_nifs = [_]nif.FunctionEntry{
     nif.wrap("append_id", id_batch.append),
     nif.wrap("fetch_id", id_batch.fetch),
     nif.wrap("replace_id", id_batch.replace),
+    nif.wrap("query_accounts", client.query_accounts),
+    nif.wrap("query_transfers", client.query_transfers),
+    nif.wrap("create_query_batch", query_batch.create),
+    nif.wrap("append_query", query_batch.append),
+    nif.wrap("fetch_query", query_batch.fetch),
+    nif.wrap("replace_query", query_batch.replace),
 };
 
 fn nif_load(env: beam.Env, _: [*c]?*anyopaque, _: beam.Term) callconv(.C) c_int {
@@ -59,6 +69,7 @@ fn nif_load(env: beam.Env, _: [*c]?*anyopaque, _: beam.Term) callconv(.C) c_int 
     AccountBatchResource.create_type(env, "TigerBeetlex.AccountBatch");
     IdBatchResource.create_type(env, "TigerBeetlex.IdBatch");
     TransferBatchResource.create_type(env, "TigerBeetlex.TransferBatch");
+    QueryFilterBatchResource.create_type(env, "TigerBeetlex.QueryFilterBatch");
     return 0;
 }
 

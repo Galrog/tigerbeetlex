@@ -37,6 +37,14 @@ defmodule TigerBeetlex.Receiver do
     send_request(from, :lookup_transfers, [state.client, id_batch], state)
   end
 
+  def handle_call({:query_accounts, query_batch}, from, state) do
+    send_request(from, :query_accounts, [state.client, query_batch], state)
+  end
+
+  def handle_call({:query_transfers, query_batch}, from, state) do
+    send_request(from, :query_transfers, [state.client, query_batch], state)
+  end
+
   defp send_request(from, function, arguments, state) do
     case apply(TigerBeetlex, function, arguments) do
       {:ok, ref} ->

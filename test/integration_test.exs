@@ -11,7 +11,8 @@ defmodule TigerBeetlex.IntegrationTest do
     CreateTransferError,
     IDBatch,
     Transfer,
-    TransferBatch
+    TransferBatch,
+    QueryFilter
   }
 
   setup_all do
@@ -798,17 +799,78 @@ defmodule TigerBeetlex.IntegrationTest do
     end
 
     test "returns partial result for mixed existing and non-existing transfers", ctx do
-      %{
-        transfer_id: transfer_id,
-        batch: batch,
-        conn: conn
-      } = ctx
+      %{transfer_id: transfer_id, batch: batch, conn: conn} = ctx
 
       {:ok, batch} = IDBatch.append(batch, <<42::128>>)
       {:ok, batch} = IDBatch.append(batch, transfer_id)
 
       assert {:ok, stream} = Connection.lookup_transfers(conn, batch)
       assert [%Transfer{id: ^transfer_id}] = Enum.to_list(stream)
+    end
+  end
+
+  describe "query_accounts/2" do
+    setup %{conn: conn} do
+      ledger = 99
+      account_id = create_account_with_ledger!(conn, ledger)
+
+      filter = %QueryFilter{
+        ledger: ledger,
+        code: 1,
+        limit: 1,
+        flags: %QueryFilter.Flags{reversed: true}
+      }
+
+      {:ok, account_id: account_id, ledger: ledger, filter: filter}
+    end
+
+    test "returns existing account based on ledger id", ctx do
+      %{
+        account_id: account_id,
+        conn: conn,
+        filter: filter
+      } = ctx
+
+      assert {:ok, stream} = Connection.query_accounts(conn, filter)
+      assert [%Account{id: ^account_id}] = Enum.to_list(stream)
+    end
+
+    test "returns multiple existing accounts based on ledger id", ctx do
+      %{
+        conn: conn,
+      } = ctx
+
+      ledger = 102
+      filter = %QueryFilter{
+        ledger: ledger,
+        code: 1,
+        limit: 1,
+        flags: %QueryFilter.Flags{reversed: true}
+      }
+
+      account_id_1 = create_account_with_ledger!(conn, ledger)
+
+      assert {:ok, stream} = Connection.query_accounts(conn, filter)
+      assert [%Account{id: ^account_id_1}] = Enum.to_list(stream)
+    end
+
+    test "returns multiple existing accounts with multiple queries based on ledger id", ctx do
+      %{conn: conn} = ctx
+
+      ledger_1 = 100
+
+      filter_1 = %QueryFilter{
+        ledger: 100,
+        code: 1,
+        limit: 2,
+        flags: %QueryFilter.Flags{reversed: true}
+      }
+
+      account_id_1 = create_account_with_ledger!(conn, ledger_1)
+      account_id_2 = create_account_with_ledger!(conn, ledger_1)
+
+      assert {:ok, stream} = Connection.query_accounts(conn, filter_1)
+      assert [%Account{id: ^account_id_2}, %Account{id: ^account_id_1}] = Enum.to_list(stream)
     end
   end
 
@@ -824,6 +886,25 @@ defmodule TigerBeetlex.IntegrationTest do
     account = %Account{
       id: id,
       ledger: 1,
+      code: 1
+    }
+
+    {:ok, batch} = AccountBatch.append(batch, account)
+
+    {:ok, stream} = Connection.create_accounts(conn, batch)
+    assert [] = Enum.to_list(stream)
+
+    id
+  end
+
+  defp create_account_with_ledger!(conn, ledger) do
+    id = random_id()
+
+    {:ok, batch} = AccountBatch.new(1)
+
+    account = %Account{
+      id: id,
+      ledger: ledger,
       code: 1
     }
 

@@ -17,6 +17,7 @@ defmodule TigerBeetlex do
   alias TigerBeetlex.IDBatch
   alias TigerBeetlex.NifAdapter
   alias TigerBeetlex.TransferBatch
+  alias TigerBeetlex.QueryFilter
   alias TigerBeetlex.Types
 
   @doc """
@@ -284,5 +285,25 @@ defmodule TigerBeetlex do
           {:ok, reference()} | {:error, Types.lookup_transfers_error()}
   def lookup_transfers(%__MODULE__{} = client, %IDBatch{} = id_batch) do
     NifAdapter.lookup_transfers(client.ref, id_batch.ref)
+  end
+
+  @spec query_accounts(client :: t(), filter :: TigerBeetlex.QueryFilter.t()) ::
+  {:ok, reference()} | {:error, Types.query_accounts_error()}
+  def query_accounts(%__MODULE__{} = client, %QueryFilter{} = filter) do
+    batch =
+      TigerBeetlex.QueryFilterBatch.new!(1)
+      |> TigerBeetlex.QueryFilterBatch.append!(filter)
+
+    NifAdapter.query_accounts(client.ref, batch.ref)
+  end
+
+  @spec query_transfers(client :: t(), filter :: TigerBeetlex.QueryFilter.t()) ::
+  {:ok, reference()} | {:error, Types.query_transfers_error()}
+  def query_transfers(%__MODULE__{} = client, %QueryFilter{} = filter) do
+    batch =
+      TigerBeetlex.QueryFilterBatch.new!(1)
+      |> TigerBeetlex.QueryFilterBatch.append!(filter)
+
+    NifAdapter.query_transfers(client.ref, batch.ref)
   end
 end

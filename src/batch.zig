@@ -7,6 +7,7 @@ const Resource = beam.resource.Resource;
 const tb = @import("tigerbeetle/src/tigerbeetle.zig");
 const Account = tb.Account;
 const Transfer = tb.Transfer;
+const QueryFilter = tb.QueryFilter;
 
 pub fn Batch(comptime Item: anytype) type {
     return struct {

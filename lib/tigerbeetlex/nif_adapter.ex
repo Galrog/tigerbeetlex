@@ -100,4 +100,36 @@ defmodule TigerBeetlex.NifAdapter do
   @spec lookup_transfers(client :: Types.client(), id_batch :: Types.id_batch()) ::
           {:ok, reference()} | {:error, Types.lookup_transfers_error()}
   def lookup_transfers(_client, _id_batch), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec query_accounts(client :: Types.client(), query_batch :: Types.query_batch()) ::
+          {:ok, reference()} | {:error, Types.query_accounts_error()}
+  def query_accounts(_client, _query_batch), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec query_transfers(client :: Types.client(), query_batch :: Types.query_batch()) ::
+      {:ok, reference()} | {:error, Types.query_transfers_error()}
+  def query_transfers(_client, _query_batch), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec create_query_batch(capacity :: non_neg_integer()) ::
+          {:ok, Types.query_batch()} | {:error, Types.create_batch_error()}
+  def create_query_batch(_capacity), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec append_query(
+          query_batch :: Types.query_batch(),
+          query_filter_binary :: Types.query_filter_binary()
+        ) ::
+          :ok | {:error, Types.append_error()}
+  def append_query(_query_batch, _query_filter_binary), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec fetch_query(query_batch :: Types.query_batch(), idx :: non_neg_integer()) ::
+          {:ok, query_filter_binary :: Types.query_filter_binary()} | {:error, Types.fetch_error()}
+  def fetch_query(_query_batch, _index), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec replace_query(
+          query_batch :: Types.query_batch(),
+          idx :: non_neg_integer(),
+          query_filter_binary :: Types.query_filter_binary()
+        ) :: :ok | {:error, Types.replace_error()}
+  def replace_query(_query_batch, _index, _query_filter_binary),
+    do: :erlang.nif_error(:nif_not_loaded)
+
 end

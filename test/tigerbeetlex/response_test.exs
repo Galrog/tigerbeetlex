@@ -16,7 +16,8 @@ defmodule TigerBeetlex.ResponseTest do
     create_accounts: 129,
     create_transfers: 130,
     lookup_accounts: 131,
-    lookup_transfers: 132
+    lookup_transfers: 132,
+    query_accounts: 135
   ]
 
   describe "to_stream/1 returns error" do
@@ -78,6 +79,15 @@ defmodule TigerBeetlex.ResponseTest do
                |> Response.to_stream()
 
       assert [%Transfer{}] = Enum.to_list(stream)
+    end
+
+    test "returns stream of Queries for query_accounts operation" do
+      assert {:ok, stream} =
+        @operation[:query_accounts]
+        |> ok_response(:binary.copy(<<0>>, 128))
+        |> Response.to_stream()
+
+      assert [%Account{}] = Enum.to_list(stream)
     end
   end
 

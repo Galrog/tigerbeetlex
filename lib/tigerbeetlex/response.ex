@@ -23,17 +23,23 @@ defmodule TigerBeetlex.Response do
   @type operation_create_transfers :: 130
   @type operation_lookup_accounts :: 131
   @type operation_lookup_transfers :: 132
+  @type operation_query_accounts :: 135
+  @type operation_query_transfers :: 136
 
   @type operation ::
           operation_create_accounts()
           | operation_create_transfers()
           | operation_lookup_accounts()
           | operation_lookup_transfers()
+          | operation_query_accounts()
+          | operation_query_transfers()
 
   @operation_create_accounts 129
   @operation_create_transfers 130
   @operation_lookup_accounts 131
   @operation_lookup_transfers 132
+  @operation_query_accounts 135
+  @operation_query_transfers 136
 
   typedstruct opaque: true do
     field :operation, non_neg_integer()
@@ -52,6 +58,7 @@ defmodule TigerBeetlex.Response do
   - `operation_create_transfer`: a stream of `%TigerBeetlex.CreateTransferError{}`.
   - `operation_lookup_accounts`: a stream of `%TigerBeetlex.Account{}`.
   - `operation_lookup_transfers`: a stream of `%TigerBeetlex.Transfer{}`.
+  - `operation_query_accounts`: a stream of `%TigerBeetlex.Account{}`.
   """
   @spec to_stream(response :: {status :: status(), operation :: operation(), data :: binary()}) ::
           {:ok, Enumerable.t()} | {:error, reason :: atom()}
@@ -94,6 +101,20 @@ defmodule TigerBeetlex.Response do
     fn
       <<>> -> nil
       <<transfer::binary-size(128), rest::binary>> -> {Transfer.from_binary(transfer), rest}
+    end
+  end
+
+  defp unfold_function(@operation_query_accounts) do
+    fn
+      <<>> -> nil
+      <<account::binary-size(128), rest::binary>> -> {Account.from_binary(account), rest}
+    end
+  end
+
+  defp unfold_function(@operation_query_transfers) do
+    fn
+      <<>> -> nil
+      <<account::binary-size(128), rest::binary>> -> {Transfer.from_binary(account), rest}
     end
   end
 end
