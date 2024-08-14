@@ -106,7 +106,7 @@ defmodule TigerBeetlex.NifAdapter do
   def query_accounts(_client, _query_batch), do: :erlang.nif_error(:nif_not_loaded)
 
   @spec query_transfers(client :: Types.client(), query_batch :: Types.query_batch()) ::
-      {:ok, reference()} | {:error, Types.query_transfers_error()}
+          {:ok, reference()} | {:error, Types.query_transfers_error()}
   def query_transfers(_client, _query_batch), do: :erlang.nif_error(:nif_not_loaded)
 
   @spec create_query_batch(capacity :: non_neg_integer()) ::
@@ -121,7 +121,8 @@ defmodule TigerBeetlex.NifAdapter do
   def append_query(_query_batch, _query_filter_binary), do: :erlang.nif_error(:nif_not_loaded)
 
   @spec fetch_query(query_batch :: Types.query_batch(), idx :: non_neg_integer()) ::
-          {:ok, query_filter_binary :: Types.query_filter_binary()} | {:error, Types.fetch_error()}
+          {:ok, query_filter_binary :: Types.fetch_error()}
+          | {:error, Types.fetch_error()}
   def fetch_query(_query_batch, _index), do: :erlang.nif_error(:nif_not_loaded)
 
   @spec replace_query(
@@ -132,4 +133,46 @@ defmodule TigerBeetlex.NifAdapter do
   def replace_query(_query_batch, _index, _query_filter_binary),
     do: :erlang.nif_error(:nif_not_loaded)
 
+  @spec create_account_filter_batch(capacity :: non_neg_integer()) ::
+          {:ok, Types.account_filter_batch()} | {:error, Types.create_batch_error()}
+  def create_account_filter_batch(_capacity), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec append_account_filter(
+          account_filter_batch :: Types.account_filter_batch(),
+          account_filter_binary :: Types.account_filter_binary()
+        ) ::
+          :ok | {:error, Types.append_error()}
+  def append_account_filter(_account_filter_batch, _account_filter_binary),
+    do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec fetch_account_filter(
+          account_filter_batch :: Types.account_filter_batch(),
+          idx :: non_neg_integer()
+        ) ::
+          {:ok, account_filter_binary :: Types.account_filter_binary()}
+          | {:error, Types.fetch_error()}
+  def fetch_account_filter(_account_filter_batch, _index), do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec replace_account_filter(
+          account_filter_batch :: Types.account_filter_batch(),
+          idx :: non_neg_integer(),
+          account_filter_binary :: Types.account_filter_binary()
+        ) :: :ok | {:error, Types.replace_error()}
+  def replace_account_filter(_account_filter_batch, _index, _account_filter_binary),
+    do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec get_account_transfers(
+          client :: Types.client(),
+          account_filter_batch :: Types.account_filter_batch()
+        ) ::
+          {:ok, reference()} | {:error, Types.get_transfers_error()}
+  def get_account_transfers(_client, _account_filter_batch),
+    do: :erlang.nif_error(:nif_not_loaded)
+
+  @spec get_account_balances(
+          client :: Types.client(),
+          query_batch :: Types.account_filter_batch()
+        ) ::
+          {:ok, reference()} | {:error, Types.get_balances_error()}
+  def get_account_balances(_client, _query_batch), do: :erlang.nif_error(:nif_not_loaded)
 end

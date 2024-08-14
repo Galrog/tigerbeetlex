@@ -102,7 +102,8 @@ defmodule TigerBeetlex.Transfer do
       (flags || %Flags{})
       |> Flags.to_u16!()
 
-    <<id::binary-size(16), id_128_default(debit_account_id)::binary-size(16),
+    <<id::binary-size(16),
+      id_128_default(debit_account_id)::binary-size(16),
       id_128_default(credit_account_id)::binary-size(16),
       zero_default(amount)::unsigned-little-128, id_128_default(pending_id)::binary-size(16),
       user_data_128_default(user_data_128)::binary-size(16),

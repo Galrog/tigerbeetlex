@@ -835,15 +835,35 @@ defmodule TigerBeetlex.IntegrationTest do
       assert [%Account{id: ^account_id}] = Enum.to_list(stream)
     end
 
-    test "returns multiple existing accounts based on ledger id", ctx do
+    test "limit number of accounts returned", ctx do
+      %{conn: conn} = ctx
+
+      ledger_1 = :rand.uniform(1_000_000_000)
+
+      filter_1 = %QueryFilter{
+        ledger: ledger_1,
+        limit: 2,
+        flags: %QueryFilter.Flags{reversed: true}
+      }
+
+      create_account_with_ledger!(conn, ledger_1)
+      create_account_with_ledger!(conn, ledger_1)
+      create_account_with_ledger!(conn, ledger_1)
+      create_account_with_ledger!(conn, ledger_1)
+
+      assert {:ok, stream} = Connection.query_accounts(conn, filter_1)
+      assert 2 = Enum.to_list(stream) |> length
+    end
+
+    test "returns single existing accounts based on ledger id", ctx do
       %{
-        conn: conn,
+        conn: conn
       } = ctx
 
       ledger = 102
+
       filter = %QueryFilter{
         ledger: ledger,
-        code: 1,
         limit: 1,
         flags: %QueryFilter.Flags{reversed: true}
       }
@@ -854,14 +874,31 @@ defmodule TigerBeetlex.IntegrationTest do
       assert [%Account{id: ^account_id_1}] = Enum.to_list(stream)
     end
 
-    test "returns multiple existing accounts with multiple queries based on ledger id", ctx do
+    test "returns multiple accounts in normal order based on ledger id", ctx do
       %{conn: conn} = ctx
 
-      ledger_1 = 100
+      ledger_1 = :rand.uniform(1_000_000_000)
 
       filter_1 = %QueryFilter{
-        ledger: 100,
-        code: 1,
+        ledger: ledger_1,
+        limit: 2,
+        flags: %QueryFilter.Flags{reversed: false}
+      }
+
+      account_id_1 = create_account_with_ledger!(conn, ledger_1)
+      account_id_2 = create_account_with_ledger!(conn, ledger_1)
+
+      assert {:ok, stream} = Connection.query_accounts(conn, filter_1)
+      assert [%Account{id: ^account_id_1}, %Account{id: ^account_id_2}] = Enum.to_list(stream)
+    end
+
+    test "returns multiple accounts in reversed order based on ledger id", ctx do
+      %{conn: conn} = ctx
+
+      ledger_1 = :rand.uniform(1_000_000_000)
+
+      filter_1 = %QueryFilter{
+        ledger: ledger_1,
         limit: 2,
         flags: %QueryFilter.Flags{reversed: true}
       }

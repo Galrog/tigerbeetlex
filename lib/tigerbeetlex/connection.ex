@@ -15,6 +15,7 @@ defmodule TigerBeetlex.Connection do
     Receiver,
     TransferBatch,
     QueryFilter,
+    AccountFilter,
     Types
   }
 
@@ -303,6 +304,22 @@ defmodule TigerBeetlex.Connection do
   ) :: {:ok, Enumerable.t()} | {:error, Types.query_transfers_error()}
   def query_transfers(name, %QueryFilter{} = query_batch) do
     via_tuple(name) |> GenServer.call({:query_transfers, query_batch})
+  end
+
+  @spec get_account_transfers(
+    name :: PartitionSupervisor.name(),
+    query_batch :: TigerBeetlex.AccountFilter.t()
+  ) :: {:ok, Enumerable.t()} | {:error, Types.get_transfers_error()}
+  def get_account_transfers(name, %AccountFilter{} = query_batch) do
+    via_tuple(name) |> GenServer.call({:get_account_transfers, query_batch})
+  end
+
+  @spec get_account_balances(
+    name :: PartitionSupervisor.name(),
+    query_batch :: TigerBeetlex.AccountFilter.t()
+  ) :: {:ok, Enumerable.t()} | {:error, Types.get_balances_error()}
+  def get_account_balances(name, %AccountFilter{} = query_batch) do
+    via_tuple(name) |> GenServer.call({:get_account_balances, query_batch})
   end
 
   defp via_tuple(name) do

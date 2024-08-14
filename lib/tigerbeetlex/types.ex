@@ -11,9 +11,15 @@ defmodule TigerBeetlex.Types do
 
   @type account_binary :: <<_::1024>>
 
+  @type account_balance_binary :: <<_::1024>>
+
   @type query_batch :: reference()
 
   @type query_filter_binary :: <<_::512>>
+
+  @type account_filter_batch :: reference()
+
+  @type account_filter_binary :: <<_::512>>
 
   @type transfer_batch :: reference()
 
@@ -82,6 +88,18 @@ defmodule TigerBeetlex.Types do
           | :too_many_requests
 
   @type query_transfers_error ::
+          :invalid_client
+          | :invalid_batch
+          | :out_of_memory
+          | :too_many_requests
+
+  @type get_transfers_error ::
+          :invalid_client
+          | :invalid_batch
+          | :out_of_memory
+          | :too_many_requests
+
+  @type get_balances_error ::
           :invalid_client
           | :invalid_batch
           | :out_of_memory

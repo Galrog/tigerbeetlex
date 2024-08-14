@@ -18,6 +18,7 @@ defmodule TigerBeetlex do
   alias TigerBeetlex.NifAdapter
   alias TigerBeetlex.TransferBatch
   alias TigerBeetlex.QueryFilter
+  alias TigerBeetlex.AccountFilter
   alias TigerBeetlex.Types
 
   @doc """
@@ -288,7 +289,7 @@ defmodule TigerBeetlex do
   end
 
   @spec query_accounts(client :: t(), filter :: TigerBeetlex.QueryFilter.t()) ::
-  {:ok, reference()} | {:error, Types.query_accounts_error()}
+          {:ok, reference()} | {:error, Types.query_accounts_error()}
   def query_accounts(%__MODULE__{} = client, %QueryFilter{} = filter) do
     batch =
       TigerBeetlex.QueryFilterBatch.new!(1)
@@ -305,5 +306,25 @@ defmodule TigerBeetlex do
       |> TigerBeetlex.QueryFilterBatch.append!(filter)
 
     NifAdapter.query_transfers(client.ref, batch.ref)
+  end
+
+  @spec get_account_transfers(client :: t(), filter :: TigerBeetlex.AccountFilter.t()) ::
+          {:ok, reference()} | {:error, Types.get_transfers_error()}
+  def get_account_transfers(%__MODULE__{} = client, %AccountFilter{} = filter) do
+    batch =
+      TigerBeetlex.AccountFilterBatch.new!(1)
+      |> TigerBeetlex.AccountFilterBatch.append!(filter)
+
+    NifAdapter.get_account_transfers(client.ref, batch.ref)
+  end
+
+  @spec get_account_balances(client :: t(), filter :: TigerBeetlex.AccountFilter.t()) ::
+          {:ok, reference()} | {:error, Types.get_balances_error()}
+  def get_account_balances(%__MODULE__{} = client, %AccountFilter{} = filter) do
+    batch =
+      TigerBeetlex.AccountFilterBatch.new!(1)
+      |> TigerBeetlex.AccountFilterBatch.append!(filter)
+
+    NifAdapter.get_account_balances(client.ref, batch.ref)
   end
 end

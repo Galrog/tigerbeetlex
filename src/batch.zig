@@ -8,6 +8,7 @@ const tb = @import("tigerbeetle/src/tigerbeetle.zig");
 const Account = tb.Account;
 const Transfer = tb.Transfer;
 const QueryFilter = tb.QueryFilter;
+const AccountFilter = tb.AccountFilter;
 
 pub fn Batch(comptime Item: anytype) type {
     return struct {

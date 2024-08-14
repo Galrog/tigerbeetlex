@@ -8,11 +8,14 @@ const client = @import("client.zig");
 const id_batch = @import("id_batch.zig");
 const transfer_batch = @import("transfer_batch.zig");
 const query_batch = @import("query_batch.zig");
+const account_filter_batch = @import("account_filter_batch.zig");
 
 const AccountBatch = account_batch.AccountBatch;
 const IdBatch = id_batch.IdBatch;
 const TransferBatch = transfer_batch.TransferBatch;
 const QueryFilterBatch = query_batch.QueryFilterBatch;
+const AccountFilterBatch = account_filter_batch.AccountFilterBatch;
+
 const Client = client.Client;
 
 const ClientResource = client.ClientResource;
@@ -20,6 +23,7 @@ const AccountBatchResource = account_batch.AccountBatchResource;
 const IdBatchResource = id_batch.IdBatchResource;
 const TransferBatchResource = transfer_batch.TransferBatchResource;
 const QueryFilterBatchResource = query_batch.QueryFilterBatchResource;
+const AccountFilterBatchResource = account_filter_batch.AccountFilterBatchResource;
 
 pub const vsr_options = .{
     .config_base = .default,
@@ -44,6 +48,8 @@ var exported_nifs = [_]nif.FunctionEntry{
     nif.wrap("create_transfers", client.create_transfers),
     nif.wrap("lookup_accounts", client.lookup_accounts),
     nif.wrap("lookup_transfers", client.lookup_transfers),
+    nif.wrap("get_account_transfers", client.get_account_transfers),
+    nif.wrap("get_account_balances", client.get_account_balances),
     nif.wrap("create_account_batch", account_batch.create),
     nif.wrap("append_account", account_batch.append),
     nif.wrap("fetch_account", account_batch.fetch),
@@ -62,6 +68,11 @@ var exported_nifs = [_]nif.FunctionEntry{
     nif.wrap("append_query", query_batch.append),
     nif.wrap("fetch_query", query_batch.fetch),
     nif.wrap("replace_query", query_batch.replace),
+
+    nif.wrap("create_account_filter_batch", account_filter_batch.create),
+    nif.wrap("append_account_filter", account_filter_batch.append),
+    nif.wrap("fetch_account_filter", account_filter_batch.fetch),
+    nif.wrap("replace_account_filter", account_filter_batch.replace),
 };
 
 fn nif_load(env: beam.Env, _: [*c]?*anyopaque, _: beam.Term) callconv(.C) c_int {
@@ -70,6 +81,7 @@ fn nif_load(env: beam.Env, _: [*c]?*anyopaque, _: beam.Term) callconv(.C) c_int 
     IdBatchResource.create_type(env, "TigerBeetlex.IdBatch");
     TransferBatchResource.create_type(env, "TigerBeetlex.TransferBatch");
     QueryFilterBatchResource.create_type(env, "TigerBeetlex.QueryFilterBatch");
+    AccountFilterBatchResource.create_type(env, "TigerBeetlex.AccountFilterBatch");
     return 0;
 }
 

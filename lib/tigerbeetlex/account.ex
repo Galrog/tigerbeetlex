@@ -102,7 +102,8 @@ defmodule TigerBeetlex.Account do
     <<id::binary-size(16), debits_and_credits::binary-size(16 * 4),
       user_data_128_default(user_data_128)::binary-size(16),
       user_data_64_default(user_data_64)::binary-size(8),
-      user_data_32_default(user_data_32)::binary-size(4), reserved::binary,
+      user_data_32_default(user_data_32)::binary-size(4),
+      reserved::binary,
       ledger::unsigned-little-32, code::unsigned-little-16, flags_u16::unsigned-little-16,
       timestamp::binary>>
   end

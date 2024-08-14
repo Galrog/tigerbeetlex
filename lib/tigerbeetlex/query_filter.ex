@@ -2,7 +2,7 @@ defmodule TigerBeetlex.QueryFilter do
   @moduledoc """
   QueryFilter struct module.
 
-  This module defines a struct that represents a TigerBeetle queryFilter.
+  This module defines a struct that represents a TigerBeetle QueryFilter.
 
   See [TigerBeetle docs](https://docs.tigerbeetle.com/reference/query-filter) for the meaning of the
   fields.
